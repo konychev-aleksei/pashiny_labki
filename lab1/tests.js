@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const GET = 'GET', POST = 'POST', basename = 'http://localhost:5000'
 
-const getRandomValue = (range = 15) => (Math.random() * range).toFixed(2)
+const getRandomValue = (range = 15) => +(Math.random() * range).toFixed(2)
 
 const testSet = [
     //TEST 1
@@ -24,7 +24,7 @@ const testSet = [
     },
     //TEST 3
     {
-        url: '/GetAnswer', 
+        url: '/GetAnswer',
         method: GET, 
         data: {}
     },
@@ -124,29 +124,40 @@ const testSet = [
 const runTest = async (testData) => {
     const { url, method, data } = testData
 
-    const response = await axios({
-        url: `${basename}${url}`,
-        method,
-        data
-    })
-
-    return response
+    try {
+        const response = await axios({
+            url: `${basename}${url}`,
+            method,
+            data
+        })
+    
+        return response
+    }
+    catch (e) {
+        return e.response
+    }
 }
 
 (
     async () => {
-        testSet.forEach(async (testData, i) => {
-            const response = await runTest(testData)
-            console.log(`\nTEST #${i + 1}`)
-            console.table({
-                requestUrl: testData.url, 
-                requestMethod: testData.method,
-                requestData: testData.data,
+        const serverRequests = []
+        testSet.forEach(testData => serverRequests.push(runTest(testData)))
+        
+        const responses = await Promise.all(serverRequests)
+        responses.forEach((response, i) => {
+            console.log(`\n\n@TEST ${i + 1}`)
+
+            console.log('Request', {
+                Url: testSet[i].url, 
+                Method: testSet[i].method,
+                Data: testSet[i].data,
             })
-            console.table({
-                responseStatus: response.status, 
-                responseData: response.data                
-            })
+            
+            console.log('Response', {
+                Status: response.status, 
+                Data: response.data                
+            })                    
         })
+
     }
 )()
