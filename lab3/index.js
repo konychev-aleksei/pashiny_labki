@@ -13,7 +13,7 @@ const processData = (data) => {
         Sums: data.Sums.decimal.map(item => +item._text),
         Muls: data.Muls.int.map(item => +item._text)
     }
-}
+} 
 
 rl.question("Введите тип сериализации: ", type => {
     rl.question("Введите входные данные: ", inputData => {
@@ -24,9 +24,9 @@ rl.question("Введите тип сериализации: ", type => {
 
         const { K, Sums, Muls } = data
 
-        const SumResult = (Sums.reduce((count, item) => count + item, 0) * K)
+        const SumResult = +(Sums.reduce((count, item) => count + item, 0) * K)
                             .toFixed(2)
-        const MulResult = (Muls.reduce((count, item) => count * item, 1))
+        const MulResult = +(Muls.reduce((count, item) => count * item, 1))
                             .toFixed(2)
         const SortedInputs = [...Sums, ...Muls].sort((a, b) => a - b)
 
